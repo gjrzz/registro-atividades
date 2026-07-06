@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import { TicketForm } from './components/TicketForm';
 import { TicketTable } from './components/TicketTable';
-import { TicketTypeSettings } from './components/TicketTypeSettings';
+import { SettingsModal } from './components/SettingsModal';
 import { CsvPreviewModal } from './components/CsvPreviewModal';
 import { Toast } from './components/Toast';
 import { useTickets } from './hooks/useTickets';
 import { useTicketTypes } from './hooks/useTicketTypes';
+import { useReporters } from './hooks/useReporters';
 import { useTemplates } from './hooks/useTemplates';
 import { generateCsv, downloadCsv } from './utils/csv';
 import type { Ticket } from './types';
@@ -13,6 +14,7 @@ import type { Ticket } from './types';
 export default function App() {
   const { tickets, addTicket, updateTicket, removeTicket, clearAll } = useTickets();
   const { ticketTypes, addType, removeType, updateType } = useTicketTypes();
+  const { reporters, addReporter, removeReporter, updateReporter } = useReporters();
   const { saveTemplate, removeTemplate, getTemplate, hasTemplate } = useTemplates();
 
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
@@ -79,6 +81,7 @@ export default function App() {
       <main className="app-main">
         <TicketForm
           ticketTypes={ticketTypes}
+          reporters={reporters}
           onSubmit={handleSubmit}
           editingTicket={editingTicket}
           onCancelEdit={() => setEditingTicket(null)}
@@ -98,11 +101,15 @@ export default function App() {
       </main>
 
       {showSettings && (
-        <TicketTypeSettings
+        <SettingsModal
           ticketTypes={ticketTypes}
-          onAdd={addType}
-          onRemove={removeType}
-          onUpdate={updateType}
+          onAddType={addType}
+          onRemoveType={removeType}
+          onUpdateType={updateType}
+          reporters={reporters}
+          onAddReporter={addReporter}
+          onRemoveReporter={removeReporter}
+          onUpdateReporter={updateReporter}
           onClose={() => setShowSettings(false)}
         />
       )}

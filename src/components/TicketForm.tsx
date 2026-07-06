@@ -5,6 +5,7 @@ import type { Template } from '../hooks/useTemplates';
 
 interface TicketFormProps {
   ticketTypes: string[];
+  reporters: string[];
   onSubmit: (ticket: Omit<Ticket, 'id' | 'createdAt'>) => void;
   editingTicket: Ticket | null;
   onCancelEdit: () => void;
@@ -23,6 +24,7 @@ const EMPTY_FORM = {
 
 export function TicketForm({
   ticketTypes,
+  reporters,
   onSubmit,
   editingTicket,
   onCancelEdit,
@@ -193,7 +195,9 @@ export function TicketForm({
               className={`form-input form-select ${errors.reporter ? 'form-input--error' : ''}`}
             >
               <option value="">Selecione...</option>
-              <option value="gabriel.juarez@montebravo.com.br">gabriel.juarez@montebravo.com.br</option>
+              {reporters.map(r => (
+                <option key={r} value={r}>{r}</option>
+              ))}
             </select>
             {errors.reporter && <p className="form-error">{errors.reporter}</p>}
           </div>
