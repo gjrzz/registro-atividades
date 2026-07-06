@@ -1,75 +1,111 @@
-# React + TypeScript + Vite
+# Registro de Atividades
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ferramenta interna da Monte Bravo para registrar chamados de TI e exportar um CSV pronto para importação em massa no Jira Service Management.
 
-Currently, two official plugins are available:
+Tudo roda no navegador — sem backend, sem dependências externas em runtime.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Vite 8** + **React 18** + **TypeScript**
+- **Tailwind CSS v4** (via `@tailwindcss/vite`)
+- **Vitest** para testes unitários
+- Persistência em **localStorage**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Funcionalidades
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Feature | Descrição |
+|---------|-----------|
+| **Formulário de chamado** | Campos Summary, Description e Reporter. Atalho `Ctrl+Enter` para adicionar rápido |
+| **Tipos de chamado** | Seletor com tipos configuráveis (Onboarding, Offboarding, etc.) — não exportado no CSV |
+| **Modelos (templates)** | Salve o preenchimento atual como modelo de um tipo. Na próxima vez que selecionar aquele tipo, os campos são preenchidos automaticamente |
+| **Tabela de chamados** | Lista com edição e exclusão por linha, botão "Limpar tudo" |
+| **Exportação CSV** | UTF-8 com BOM, escape RFC 4180, preview antes do download. Arquivo: `jira-import-AAAA-MM-DD-HHmm.csv` |
+| **Configurações** | Modal para adicionar, editar e remover tipos de chamado. Tudo persistido em localStorage |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estrutura
 
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+src/
+├── components/
+│   ├── TicketForm.tsx          # Formulário principal
+│   ├── TicketTable.tsx         # Tabela de chamados
+│   ├── TicketTypeSettings.tsx  # Modal de configuração de tipos
+│   ├── CsvPreviewModal.tsx     # Preview do CSV antes do download
+│   └── Toast.tsx               # Notificação de sucesso
+├── hooks/
+│   ├── useTickets.ts           # Estado + localStorage dos chamados
+│   ├── useTicketTypes.ts       # CRUD dos tipos de chamado
+│   └── useTemplates.ts         # Modelos de preenchimento por tipo
+├── styles/
+│   ├── tokens.css              # CSS custom properties (paleta, fontes, radii)
+│   ├── fonts.css               # @font-face Graphie + Termina
+│   └── components.css          # Classes do design system
+├── utils/
+│   ├── csv.ts                  # Geração e escape do CSV
+│   └── csv.test.ts             # Testes unitários
+├── fonts/                      # Arquivos .otf
+├── background/                 # Imagem de fundo
+├── types.ts
+├── App.tsx
+├── main.tsx
+└── index.css
 ```
+
+---
+
+## Rodar localmente
+
+```bash
+npm install
+npm run dev
+```
+
+## Build de produção
+
+```bash
+npm run build
+npm run preview
+```
+
+## Testes
+
+```bash
+npm test
+```
+
+---
+
+## CSV gerado
+
+O arquivo exportado segue este formato:
+
+```csv
+Summary,Description,Reporter
+Instalar VS Code,Preciso do VS Code na máquina nova,gabriel.juarez@montebravo.com.br
+```
+
+- Codificação: UTF-8 com BOM (`\uFEFF`) para compatibilidade com Excel brasileiro
+- Delimitador: vírgula
+- Escape: RFC 4180 (aspas duplas envolvem campos com `,`, `"` ou quebra de linha)
+
+---
+
+## Design
+
+Visual inspirado no sistema interno de Termos de Responsabilidade:
+
+- Fundo escuro com imagem + overlay
+- Cards brancos flutuantes
+- Paleta institucional roxa (`#57489c`)
+- Fontes Graphie (corpo) e Termina (títulos)
+- Sem gradientes, sem emojis, sem glassmorphism
+
+---
+
+*Monte Bravo Investimentos — TI*
